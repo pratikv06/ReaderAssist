@@ -1,0 +1,53 @@
+{
+  "manifest_version": 3,
+  "name": "ReaderAssist",
+  "version": "5.1",
+  "description": "ReaderAssist detects membership or access indicators on supported websites and displays a subtle, non-intrusive popup that allows users to switch to an alternate viewing mode",
+  "author": "Your Name",
+  "homepage_url": "https://github.com/your-repo",
+  "permissions": [
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://medium.com/*",
+        "*://*.medium.com/*"
+      ],
+      "js": [
+        "content/ui.js",
+        "content/detector.js",
+        "content/content.js"
+      ],
+      "css": [
+        "styles/popup.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "commands": {
+    "open-freedium": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F",
+        "mac": "Command+Shift+F"
+      },
+      "description": "Open current page"
+    }
+  },
+  "icons": {
+    "16": "assets/icon16.png",
+    "32": "assets/icon32.png",
+    "192": "assets/icon192.png",
+    "512": "assets/icon512.png"
+  },
+  "action": {
+    "default_title": "ReaderAssist",
+    "default_icon": {
+      "16": "assets/icon16.png",
+      "32": "assets/icon32.png"
+    }
+  }
+}

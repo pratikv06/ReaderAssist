@@ -1,0 +1,2 @@
+checkPage();
+observeNavigation();
