@@ -9,9 +9,14 @@ const enableRedirectEl = document.getElementById("enableRedirect");
 const redirectUrlEl = document.getElementById("redirectUrl");
 const saveBtn = document.getElementById("saveBtn");
 const resetBtn = document.getElementById("resetBtn");
-const statusEl = document.getElementById("status");
 
-// Load settings
+const confirmModal = document.getElementById("confirmModal");
+const confirmResetBtn = document.getElementById("confirmReset");
+const cancelResetBtn = document.getElementById("cancelReset");
+
+const toastEl = document.getElementById("toast");
+
+/* Load Settings */
 function loadSettings() {
   chrome.storage.sync.get(DEFAULT_SETTINGS, (items) => {
     enablePopupEl.checked = items.enablePopup;
@@ -20,39 +25,61 @@ function loadSettings() {
   });
 }
 
-// Save settings
+/* Save Settings */
 function saveSettings() {
-  chrome.storage.sync.set(
-    {
-      enablePopup: enablePopupEl.checked,
-      enableRedirect: enableRedirectEl.checked,
-      redirectUrl: redirectUrlEl.value
-    },
-    () => {
-      showStatus("Settings saved.");
-    }
-  );
+  chrome.storage.sync.set({
+    enablePopup: enablePopupEl.checked,
+    enableRedirect: enableRedirectEl.checked,
+    redirectUrl: redirectUrlEl.value
+  }, () => {
+    showToast("Settings saved");
+  });
 }
 
-// Reset to default
+/* Reset Settings */
 function resetSettings() {
   chrome.storage.sync.set(DEFAULT_SETTINGS, () => {
     enablePopupEl.checked = DEFAULT_SETTINGS.enablePopup;
     enableRedirectEl.checked = DEFAULT_SETTINGS.enableRedirect;
     redirectUrlEl.value = DEFAULT_SETTINGS.redirectUrl;
 
-    showStatus("Settings reset to default.");
+    showToast("Settings reset to default");
   });
 }
 
-function showStatus(message) {
-  statusEl.textContent = message;
+/* Toast */
+function showToast(message) {
+  toastEl.textContent = message;
+  toastEl.classList.remove("hidden");
+  toastEl.classList.add("show");
+
   setTimeout(() => {
-    statusEl.textContent = "";
+    toastEl.classList.remove("show");
+    setTimeout(() => {
+      toastEl.classList.add("hidden");
+    }, 300);
   }, 2000);
 }
 
+/* Modal Controls */
+function openModal() {
+  confirmModal.classList.remove("hidden");
+}
+
+function closeModal() {
+  confirmModal.classList.add("hidden");
+}
+
+/* Event Listeners */
 saveBtn.addEventListener("click", saveSettings);
-resetBtn.addEventListener("click", resetSettings);
+
+resetBtn.addEventListener("click", openModal);
+
+confirmResetBtn.addEventListener("click", () => {
+  resetSettings();
+  closeModal();
+});
+
+cancelResetBtn.addEventListener("click", closeModal);
 
 loadSettings();
