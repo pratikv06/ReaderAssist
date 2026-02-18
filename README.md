@@ -20,9 +20,10 @@ Built as a lightweight productivity tool with a modular architecture designed fo
 - One-click alternate view action
 - Auto-dismiss after 10 seconds
 - Keyboard shortcut support
-- Toolbar icon support
-- SPA-safe (React / dynamic routing compatible)
-- Modular and maintainable code structure
+- Auto-run detection
+- Hide popup notification
+- Open in same tab options
+- Settings dashboard (accessible via the `Options` page)
 
 ## ⌨️ Keyboard Shortcut
 
@@ -42,7 +43,8 @@ chrome://extensions/shortcuts
 
 1. Content script monitors page content.
 2. If a paywall indicator is detected:
-     - A floating UI card appears.
+     - If Auto Run is enabled: the extension will automatically open the alternate view.
+     - Otherwise (Auto Run disabled and popup not hidden): a floating UI card appears.
 3. User can:
      - Click Open to switch view
      - Click × to dismiss
@@ -57,17 +59,23 @@ The UI is isolated and designed to avoid conflicts with site styling.
 .
 ├── manifest.json
 ├── background.js
-│
+├── popup/
+│   ├── popup.html
+│   ├── popup.js
+│   └── popup.css
+├── options/
+│   ├── options.html
+│   ├── options.js
+│   └── options.css
 ├── content/
 │   ├── content.js      # Entry point
 │   ├── detector.js     # Paywall detection logic
 │   └── ui.js           # Popup lifecycle + interaction
-│
 ├── styles/
 │   └── popup.css
-│
-└── assets/
-    └── icons
+├── assets/
+│   └── icons/
+└── screenshots/
 ```
 
 ## 🚀 Installation (Developer Mode)
@@ -80,15 +88,14 @@ The UI is isolated and designed to avoid conflicts with site styling.
 
 ## 📸 Screenshots
 
-Pin ReaderAssist to your toolbar, open a Medium article, and the floating popup will appear in the bottom-right when a membership notice is detected.
+Pin ReaderAssist to your toolbar, open an article with membership access, and the floating popup (bottom-right) will appear showing the `Open` action, settings, and auto-run state — see the example below.
 
-  ![Popup](screenshots/Screen1.png)
+     ![Popup](screenshots/Screen1.png)
 
 ## 🔮 Up coming features...
 
 - Multi-site support
 - Per-site enable/disable toggle
-- Settings dashboard
 - Optional analytics (local only)
 
 ## 🙌 Credit
