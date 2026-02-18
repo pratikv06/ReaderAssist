@@ -4,45 +4,64 @@ function detectPaywall() {
   return document.body.innerText.includes("Member-only story");
 }
 
+function handleDetection() {
+  // Load current settings to decide whether to auto-run or show popup
+  chrome.storage.sync.get(
+    {
+      enableExtension: true,
+      autoRun: true,
+      hidePopup: false,
+      sameTab: false,
+      redirectUrl: "https://freedium-mirror.cfd/",
+    },
+    (settings) => {
+      if (!settings.enableExtension) return;
+
+      if (settings.autoRun) {
+        // Ask background to open freedium for this tab
+        chrome.runtime.sendMessage({ type: "OPEN_FREEDIUM" });
+      } else if (!settings.hidePopup) {
+        // show in-page popup
+        try {
+          showPopup();
+        } catch (e) {
+          // fail silently if UI not available
+        }
+      }
+    }
+  );
+}
+
 function checkPage() {
   setTimeout(() => {
     if (detectPaywall()) {
-      chrome.runtime.onMessage.addListener((message, sender) => {
-        if (message.type === "OPEN_FREEDIUM") {
-          chrome.storage.sync.get(
-            {
-              enableExtension: true,
-              sameTab: false,
-              redirectUrl: "https://freedium-mirror.cfd/",
-            },
-            (settings) => {
-              if (!settings.enableExtension) return;
-
-              const tabId = message.tabId || sender.tab?.id;
-              if (!tabId) return;
-
-              chrome.tabs.get(tabId, (tab) => {
-                const newUrl = settings.redirectUrl + tab.url;
-
-                if (settings.sameTab) {
-                  chrome.tabs.update(tabId, { url: newUrl });
-                } else {
-                  chrome.tabs.create({ url: newUrl });
-                }
-              });
-            },
-          );
-        }
-      });
+      handleDetection();
     }
   }, 2000);
 }
+
+// react to storage changes (e.g., hidePopup toggled or autoRun enabled)
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area !== 'sync') return;
+
+  if (changes.hidePopup && changes.hidePopup.newValue) {
+    // if hidePopup turned on, remove any visible popup
+    try { removePopup(); } catch (e) {}
+  }
+
+  if (changes.autoRun && changes.autoRun.newValue) {
+    // if autoRun was enabled, and page currently has paywall, trigger it
+    if (detectPaywall()) {
+      handleDetection();
+    }
+  }
+});
 
 function observeNavigation() {
   new MutationObserver(() => {
     if (location.href !== lastUrl) {
       lastUrl = location.href;
-      removePopup(false);
+      try { removePopup(false); } catch (e) {}
       checkPage();
     }
   }).observe(document, { subtree: true, childList: true });
