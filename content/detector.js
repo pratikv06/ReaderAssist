@@ -7,9 +7,32 @@ function detectPaywall() {
 function checkPage() {
   setTimeout(() => {
     if (detectPaywall()) {
-      chrome.storage.sync.get({ enablePopup: true }, (settings) => {
-        if (!settings.enablePopup) return;
-        showPopup();
+      chrome.runtime.onMessage.addListener((message, sender) => {
+        if (message.type === "OPEN_FREEDIUM") {
+          chrome.storage.sync.get(
+            {
+              enableExtension: true,
+              sameTab: false,
+              redirectUrl: "https://freedium-mirror.cfd/",
+            },
+            (settings) => {
+              if (!settings.enableExtension) return;
+
+              const tabId = message.tabId || sender.tab?.id;
+              if (!tabId) return;
+
+              chrome.tabs.get(tabId, (tab) => {
+                const newUrl = settings.redirectUrl + tab.url;
+
+                if (settings.sameTab) {
+                  chrome.tabs.update(tabId, { url: newUrl });
+                } else {
+                  chrome.tabs.create({ url: newUrl });
+                }
+              });
+            },
+          );
+        }
       });
     }
   }, 2000);

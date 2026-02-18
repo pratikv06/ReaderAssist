@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ReaderAssist",
-  "version": "5.1",
+  "version": "1.1.1",
   "description": "ReaderAssist detects membership or access indicators on supported websites and displays a subtle, non-intrusive popup that allows users to switch to an alternate viewing mode",
   "author": "Pratik Vishwakarma",
   "homepage_url": "https://github.com/pratikv06/ReaderAssist",
@@ -47,6 +47,7 @@
   },
   "action": {
     "default_title": "ReaderAssist",
+    "default_popup": "popup/popup.html",
     "default_icon": {
       "16": "assets/icon16.png",
       "32": "assets/icon32.png"

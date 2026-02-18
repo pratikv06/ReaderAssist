@@ -14,17 +14,32 @@ chrome.action.onClicked.addListener((tab) => {
 // Handle keyboard shortcut
 chrome.commands.onCommand.addListener((command) => {
   if (command === "open-freedium") {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (!tabs.length) return;
+    // Respect the enableExtension setting: if disabled, do nothing
+    chrome.storage.sync.get(
+      {
+        enableExtension: true,
+        sameTab: false,
+        redirectUrl: FREEDIUM_PREFIX
+      },
+      (settings) => {
+        if (!settings.enableExtension) return;
 
-      const tab = tabs[0];
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          if (!tabs.length) return;
 
-      if (!tab.url.startsWith(FREEDIUM_PREFIX)) {
-        chrome.tabs.create({
-          url: FREEDIUM_PREFIX + tab.url
+          const tab = tabs[0];
+          const newUrl = settings.redirectUrl + tab.url;
+
+          if (settings.sameTab) {
+            chrome.tabs.update(tab.id, { url: newUrl });
+          } else {
+            if (!tab.url.startsWith(settings.redirectUrl)) {
+              chrome.tabs.create({ url: newUrl });
+            }
+          }
         });
       }
-    });
+    );
   }
 });
 
@@ -32,18 +47,53 @@ chrome.commands.onCommand.addListener((command) => {
 chrome.runtime.onMessage.addListener((message, sender) => {
   if (message.type === "OPEN_FREEDIUM" && sender.tab) {
     chrome.storage.sync.get(
-      { enableRedirect: true, redirectUrl: "" },
+      {
+        enableExtension: true,
+        sameTab: false,
+        redirectUrl: "https://freedium-mirror.cfd/"
+      },
       (settings) => {
-        if (!settings.enableRedirect || !settings.redirectUrl) return;
+        if (!settings.enableExtension) return;
 
-        const currentUrl = sender.tab.url;
+        const newUrl = settings.redirectUrl + sender.tab.url;
 
-        if (!currentUrl.startsWith(settings.redirectUrl)) {
-          chrome.tabs.create({
-            url: settings.redirectUrl + currentUrl
-          });
+        if (settings.sameTab) {
+          chrome.tabs.update(sender.tab.id, { url: newUrl });
+        } else {
+          chrome.tabs.create({ url: newUrl });
         }
       }
     );
   }
 });
+
+// Badge handling: show a red dot on the toolbar icon when the extension is "disabled" via settings
+function updateActionBadgeForDisabledState(disabled) {
+  if (disabled) {
+    try {
+      chrome.action.setBadgeText({ text: '●' });
+      chrome.action.setBadgeBackgroundColor({ color: '#ff4d4f' });
+    } catch (e) {
+      // ignore in environments where action API is unavailable
+    }
+  } else {
+    try {
+      chrome.action.setBadgeText({ text: '' });
+    } catch (e) {
+      // ignore
+    }
+  }
+}
+
+// Initialize badge on startup
+chrome.storage.sync.get({ enableExtension: true }, (items) => {
+  updateActionBadgeForDisabledState(!items.enableExtension);
+});
+
+// Listen for changes to the enableExtension setting and update the badge
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'sync' && changes.enableExtension) {
+    updateActionBadgeForDisabledState(!changes.enableExtension.newValue);
+  }
+});
+

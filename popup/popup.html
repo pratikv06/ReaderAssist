@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>ReaderAssist</title>
+    <link rel="stylesheet" href="./popup.css" />
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>ReaderAssist</h2>
+
+        <!-- Primary Action -->
+        <button id="openNow" class="primary-action">
+            <span class="btn-content">Open in ReaderAssist</span>
+            <span id="shortcutDisplay" class="shortcut-display"></span>
+            <span id="disabledBadge" class="disabled-badge" title="Extension disabled">●</span>
+        </button>
+
+        <div class="divider"></div>
+
+        <div class="setting-row">
+            <span>Enable Extension</span>
+            <label class="switch">
+                <input type="checkbox" id="enableExtension">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="setting-row">
+            <span>Auto Run</span>
+            <label class="switch">
+                <input type="checkbox" id="autoRun">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="setting-row">
+            <span>Hide Popup Notification</span>
+            <label class="switch">
+                <input type="checkbox" id="hidePopup">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="setting-row">
+            <span>Open in Same Tab</span>
+            <label class="switch">
+                <input type="checkbox" id="sameTab">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <button id="openSettings" class="link-btn">
+            Advanced Settings
+        </button>
+
+    </div>
+
+    <script src="./popup.js"></script>
+</body>
+
+</html>
