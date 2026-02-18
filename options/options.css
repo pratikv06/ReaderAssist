@@ -150,3 +150,25 @@ button:active {
   text-align: center;
   color: green;
 }
+
+.button-group {
+  display: flex;
+  gap: 12px;
+}
+
+.primary-btn {
+  flex: 1;
+  background: black;
+  color: white;
+}
+
+.secondary-btn {
+  flex: 1;
+  background: #f0f0f0;
+  color: black;
+  border: 1px solid #ddd;
+}
+
+.secondary-btn:hover {
+  background: #e6e6e6;
+}
