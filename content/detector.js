@@ -7,7 +7,10 @@ function detectPaywall() {
 function checkPage() {
   setTimeout(() => {
     if (detectPaywall()) {
-      showPopup();
+      chrome.storage.sync.get({ enablePopup: true }, (settings) => {
+        if (!settings.enablePopup) return;
+        showPopup();
+      });
     }
   }, 2000);
 }

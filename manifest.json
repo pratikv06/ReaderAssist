@@ -3,10 +3,12 @@
   "name": "ReaderAssist",
   "version": "5.1",
   "description": "ReaderAssist detects membership or access indicators on supported websites and displays a subtle, non-intrusive popup that allows users to switch to an alternate viewing mode",
-  "author": "Your Name",
-  "homepage_url": "https://github.com/your-repo",
+  "author": "Pratik Vishwakarma",
+  "homepage_url": "https://github.com/pratikv06/ReaderAssist",
+  "options_page": "options/options.html",
   "permissions": [
-    "tabs"
+    "tabs",
+    "storage"
   ],
   "background": {
     "service_worker": "background.js"

@@ -31,12 +31,19 @@ chrome.commands.onCommand.addListener((command) => {
 // Handle message from popup
 chrome.runtime.onMessage.addListener((message, sender) => {
   if (message.type === "OPEN_FREEDIUM" && sender.tab) {
-    const currentUrl = sender.tab.url;
+    chrome.storage.sync.get(
+      { enableRedirect: true, redirectUrl: "" },
+      (settings) => {
+        if (!settings.enableRedirect || !settings.redirectUrl) return;
 
-    if (!currentUrl.startsWith(FREEDIUM_PREFIX)) {
-      chrome.tabs.create({
-        url: FREEDIUM_PREFIX + currentUrl
-      });
-    }
+        const currentUrl = sender.tab.url;
+
+        if (!currentUrl.startsWith(settings.redirectUrl)) {
+          chrome.tabs.create({
+            url: settings.redirectUrl + currentUrl
+          });
+        }
+      }
+    );
   }
 });
