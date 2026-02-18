@@ -10,18 +10,32 @@
     <h1>ReaderAssist Settings</h1>
 
     <div class="settings-group">
-      <label class="setting-inline">
-        <input type="checkbox" id="enablePopup" />
-        <span>Enable popup detection</span>
-      </label>
 
-      <label class="setting-inline">
-        <input type="checkbox" id="enableRedirect" />
-        <span>Enable alternate view redirect</span>
-      </label>
+      <div class="setting-row">
+        <div class="setting-text">
+          <div class="setting-title">Enable popup detection</div>
+          <div class="setting-desc">Show popup when membership notice is detected.</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="enablePopup">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-text">
+          <div class="setting-title">Enable alternate view redirect</div>
+          <div class="setting-desc">Allow switching to alternate viewing mode.</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="enableRedirect">
+          <span class="slider"></span>
+        </label>
+      </div>
+
     </div>
 
-    <div class="setting">
+    <div class="setting-input">
       <label for="redirectUrl">Alternate View Base URL</label>
       <input 
         type="text" 
